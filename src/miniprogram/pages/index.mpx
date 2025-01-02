@@ -1,0 +1,59 @@
+<template>
+  <view class="flex flex-col h-screen index justify-between">
+    <view></view>
+    <view class="w-full">
+      <view class="flex justify-center">
+        <image mode="widthFix" class="w-94px h-94px self-center" src="../assets/logo.png"></image>
+      </view>
+      <view class="flex justify-center mt-76px">
+        <button class="index-button" type="primary">微信授权一键登录</button>
+      </view>
+    </view>
+    <view class="w-full index-text text-center">
+      <view
+        >登录代表同意<text class="text-#42a4ff">《用户协议》</text>和<text class="text-#42a4ff"
+          >《隐私协议》</text
+        >
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import { createPage } from '@mpxjs/core'
+
+  createPage({
+    onLoad() {
+      //
+    }
+  })
+</script>
+
+<style lang="scss" scoped>
+  .index {
+    padding-top: env(safe-area-inset-top); /* 适配状态栏 */
+    padding-left: env(safe-area-inset-left); /* 适配左侧安全区域 */
+    padding-right: env(safe-area-inset-right); /* 适配右侧安全区域 */
+    padding-bottom: env(safe-area-inset-bottom); /* 适配底部安全区域 */
+    box-sizing: border-box;
+  }
+  .index-button {
+    width: 350px;
+    height: 50px;
+    background-color: #4299ff !important;
+    border-radius: 100px !important;
+    color: #fff;
+    font-size: 17px;
+    line-height: 50px;
+    box-shadow: 0px 10px 20px 0px rgba(229, 229, 229, 0.5);
+  }
+  .index-text {
+    font-size: 12px;
+  }
+</style>
+
+<script type="application/json">
+  {
+    "usingComponents": {}
+  }
+</script>

@@ -1,0 +1,252 @@
+<template>
+  <view class="flex flex-col items-center">
+    <view class="w-240px h-300px rounded-40px bg-#d1eafd mt-52px flex items-center justify-center">
+      <image class="w-155.31px h-214.3px" mode="widthFix" src="../../assets/notfound.png"></image>
+    </view>
+    <view class="mt-26px text-24px text-#333px font-500">没有玩具连接</view>
+    <view class="blue-tip mt-12px">确保玩具已完成充电，点击“连接玩具”</view>
+    <view class="blue-tip">根据提示完成操作</view>
+    <view class="mt-40px">
+      <view
+        class="w-184px h-60px leading-60px text-16px font-500 text-#fff text-center rounded-30px blue-button bg-#a8d6ff"
+        bindtap="onScan"
+      >
+        <text class="text-20px">+ </text>
+        连接玩具</view
+      >
+    </view>
+    <view class="mt-40px">
+      <view
+        class="w-184px h-60px leading-60px text-16px font-500 text-#fff text-center rounded-30px blue-button bg-#a8d6ff"
+        bindtap="fuck"
+      >
+        <text class="text-20px">+ </text>
+        连接WIFI</view
+      >
+    </view>
+
+    <page-container
+      show="{{show}}"
+      round="{{true}}"
+      overlay="{{true}}"
+      close-on-slide-down="{{false}}"
+    >
+      <view class="text-center">
+        <view class="blue-title mt-20px">请输入「{{ SSID }}」的密码</view>
+        <view class="flex justify-center">
+          <view class="blue-list-item text-center py-12px flex">
+            <view class="flex-1">
+              <input bindinput="onInputPassword" placeholder="点击此处输入密码" password />
+            </view>
+          </view>
+        </view>
+        <view class="my-40px flex items-center justify-center">
+          <view
+            class="w-184px h-60px leading-60px text-16px font-500 text-#fff text-center rounded-30px blue-button bg-#a8d6ff"
+            bindtap="onNext"
+          >
+            下一步</view
+          >
+        </view>
+      </view>
+    </page-container>
+  </view>
+  <!-- <view
+    class="flex flex-col justify-center items-center absolute top-0 left-0 w-full h-full blue-modal"
+  >
+    <view class="flex items-center mt-12px">
+      <image class="w-16px h-16px" src="../../assets/warn.png"></image>
+      <text class="text-14px text-#ff8f49">蓝牙连接失败，请检查设备</text>
+    </view>
+    <view class="mt-24px blue-item text-center py-16px relative">
+      <view class="blue-title">请连接「AI Toy蓝牙」</view>
+      <view>
+        <image
+          class="w-76px h-76px absolute left-8px top--16px"
+          src="../../assets/bluetooth.png"
+        ></image>
+      </view>
+      <view class="flex flex-col items-center" wx:for="{{bluetoothList}}" wx:key="id">
+        <view class="blue-list-item text-center py-12px relative"
+          >{{ item.name }}
+          <image
+            wx:if="{{item.isConnect}}"
+            class="w-24px h-24px absolute right-0 top-1/2 translate-y--1/2"
+            src="../../assets/connected.png"
+          ></image>
+        </view>
+      </view>
+    </view>
+    <view class="mt-24px blue-item text-center py-16px relative bg-#fff">
+      <view class="blue-title">请连接「AI Toy WIFI」</view>
+      <view>
+        <image
+          class="w-76px h-76px absolute left-8px top--16px"
+          src="../../assets/wifi.png"
+        ></image>
+      </view>
+      <view class="flex flex-col items-center">
+        <view class="blue-list-item text-center py-12px flex">
+          <view>名称：</view>
+          <view class="flex-1">
+            <input bindinput="onInputName" />
+          </view>
+        </view>
+        <view class="blue-list-item text-center py-12px flex">
+          <view>密码：</view>
+          <view class="flex-1">
+            <input bindinput="onInputPassword" password />
+          </view>
+        </view>
+      </view>
+      <view class="mt-40px flex items-center justify-center">
+        <view
+          class="w-184px h-60px leading-60px text-16px font-500 text-#fff text-center rounded-30px blue-button bg-#a8d6ff"
+        >
+          下一步</view
+        >
+      </view>
+    </view>
+  </view> -->
+</template>
+
+<script>
+  import { createPage } from '@mpxjs/core'
+
+  createPage({
+    onLoad() {
+      //
+    },
+    data: {
+      isClick: true,
+      bluetoothList: [
+        {
+          id: 1,
+          name: 'AI Toy',
+          isConnect: true
+        }
+      ],
+      boardSSID: '',
+      boardPassword: '',
+      SSID: 'TP-LINK_F6B4',
+      password: 'xzh654321',
+      show: false
+    },
+    methods: {
+      onInputName(e) {
+        this.setData({
+          name: e.detail.value
+        })
+      },
+      onInputPassword(e) {
+        this.setData({
+          password: e.detail.value
+        })
+      },
+      onScan() {
+        wx.startWifi()
+          .then(() => {
+            return wx.scanCode({
+              scanType: 'qrcode'
+            })
+          })
+          .then((res) => {
+            wx.showLoading({
+              title: '获取中'
+            })
+            const result = JSON.parse(res.result)
+            this.setData({
+              boardSSID: result.SSID,
+              boardPassword: result.password
+            })
+            return wx.getConnectedWifi()
+          })
+          .then((res) => {
+            this.setData({
+              SSID: res.wifi.SSID,
+              show: true
+            })
+            wx.hideLoading()
+          })
+          .catch(console.warn)
+      },
+      onNext() {
+        this.setData({
+          show: false
+        })
+        wx.showLoading({
+          title: '连接中'
+        })
+        console.log(this.boardSSID, this.boardPassword)
+        wx.connectWifi({
+          SSID: this.boardSSID,
+          password: this.boardPassword,
+          forceApi: true
+        }).then(() => {
+          // setTimeout(() => {
+          //   console.log(this.SSID, this.password)
+          //   wx.connectWifi({
+          //     SSID: this.SSID,
+          //     password: this.password
+          //   }).then(() => {
+          wx.hideLoading()
+          //   })
+          // }, 5000)
+        })
+      },
+      fuck() {
+        // wx.stopWifi().then(() => {
+        // return wx.startWifi()
+        // })
+        // .then(() => {
+        wx.connectWifi({
+          SSID: this.SSID,
+          password: this.password,
+          success(res) {
+            console.log(res)
+          },
+          fail(err) {
+            console.warn(err)
+          }
+        })
+        // })
+      }
+    }
+  })
+</script>
+
+<style lang="scss" scoped>
+  .blue-tip {
+    font-size: 16px;
+    color: #999;
+    line-height: 28px;
+  }
+  .blue-button {
+    box-shadow: 0px 3px 0px 0px #8dc9ff;
+  }
+  .blue-title {
+    font-size: 16px;
+    line-height: 28px;
+    color: #333;
+    font-weight: 500;
+  }
+  .blue-item {
+    width: 335px;
+    border-radius: 40px;
+    border: 1px solid #0000000d;
+    box-shadow: 0px 4px 28px 4px #0000000a;
+  }
+  .blue-list-item {
+    width: 255px;
+    border-bottom: 1px solid rgb(0, 0, 0, 0.1);
+  }
+
+  .blue-modal {
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+</style>
+<script type="application/json">
+  {
+    "usingComponents": {}
+  }
+</script>
